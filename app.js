@@ -1,28 +1,50 @@
 var budgetController = (function () {
 
-    var x = 23;
-    var add = function (a) {
-        return x + a;
-    }
+    //some code 
 
-    return {
-        publicTest: function(b) {
-            return add(b);
-        }
-    }
 })();
+
+
+
 
 var UIController = (function() {
-    //some code later!
-})();
 
-var contorller = (function(budgetCtrl, UICtrl){
-    var z = budgetCtrl.publicTest(5);
+
+    //some code later!
     return {
-        anotherPublic: function (){
-            console.log(z);
+        getinput: function(){
+            return {
+                type: document.querySelector('.add__type').value,
+                desscription: document.querySelector('.add__description').value,
+                value : document.querySelector('.add__value').value
+            }
+    
+
         }
     }
 
+
+})();
+
+
+//APP controller
+var contorller = (function(budgetCtrl, UICtrl){
+    var ctrlAddItem = function() {
+        //1. Get the filed input data
+        var input = UIController.getinput();
+        console.log(input);
+
+        //2. Addd the item to the budget controller
+        //3. Add the item to the UI
+        //4. Calculate the budget
+        //5. Display the budget on the UI
+
+    };
+
+    document.querySelector('.add__btn').addEventListener('click' , ctrlAddItem);
+    document.addEventListener('keypress' , function(event) {
+        if (event.keyCode === 13 || event.which === 13) {
+            ctrlAddItem();
+        }
+    });
 })(budgetController, UIController);
-contorller.anotherPublic();
