@@ -79,9 +79,10 @@ var UIController = (function() {
                 '<div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete">'+
                 '<button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
             }else if (type === 'exp') {
-                ement = DOMstrings.expensesContainer;
+                
+                element = DOMstrings.expensesContainer;
                 html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div>'+
-                '<div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">%percentage%</div>'+
+                '<div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div>'+
                 '<div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
             }
 
@@ -94,6 +95,17 @@ var UIController = (function() {
         },
         getDOMstrings: function() {
             return DOMstrings;
+        }
+        ,clearFields: function() {
+            var fields, fieldsArray;
+            fields = document.querySelectorAll(DOMstrings.inputDescription +', ' + DOMstrings.inputValue);
+
+            fieldsArray = Array.prototype.slice.call(fields);
+
+            fieldsArray.forEach(function(current, index, array) {
+                current.value = "";
+            });
+            fieldsArray[0].focus();
         }
 
     }
@@ -123,6 +135,8 @@ var contorller = (function(budgetCtrl, UICtrl){
         newItem = budgetController.addItem(input.type, input.desscription, input.value);
         //3. Add the item to the UI
         UIController.addListItem(newItem, input.type);
+        //4. cliering fields
+        UIController.clearFields();
         //4. Calculate the budget
         //5. Display the budget on the UI
 
