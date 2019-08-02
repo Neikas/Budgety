@@ -11,7 +11,17 @@ var budgetController = (function () {
         this.desscription = desscription;
         this.value = value;
     };
-    
+
+    var calculateTotal = function(type) {
+        var sum = 0;
+
+        data.allItems[type].forEach(function(current) {
+            sum += current.value;
+        });
+        data.totals[type] = sum;
+    };
+
+
     var data = {
         allItems:{
             exp: [],
@@ -20,7 +30,9 @@ var budgetController = (function () {
         totals:{
             exp: 0,
             inc: 0
-        }
+        },
+        budget: 0,
+        percentage: -1
     }
 
     return {
@@ -45,7 +57,28 @@ var budgetController = (function () {
             return newItem;
         },
         calculateBudget: function () {
+            //calculate total income and expenses
+            calculateTotal('exp');
+            calculateTotal('inc');
 
+            //calculate the budget: income - expenses
+            data.budget = data.totals.inc - data.totals.exp;
+
+            //calculate the precentage of income that we spent
+            if(data.totals.inc > 0){
+                data.percentage =Math.round((data.totals.exp / data.totals.inc) * 100);
+            }else {
+                data.percentage = -1;
+            }
+            
+        },
+        getBudget: function() {
+            return {
+                budget: data.budget,
+                totalInc: data.totals.inc,
+                totalExp: data.totals.exp,
+                percentage: data.percentage
+            }
         },
         testing:function() {
             console.log(data);
@@ -60,7 +93,12 @@ var UIController = (function() {
         inputValue: '.add__value',
         inputBtn: '.add__btn',
         incomeContainer: '.income__list',
-        expensesContainer: '.expenses__list'
+        expensesContainer: '.expenses__list',
+        budgetLabel:'.budget__value',
+        incomeLabel:'.budget__income--value',
+        expenseLabel: '.budget__expenses--value',
+        precentageLabel:'.budget__expenses--percentage'
+
     }; 
 
 
@@ -98,8 +136,20 @@ var UIController = (function() {
         },
         getDOMstrings: function() {
             return DOMstrings;
-        }
-        ,clearFields: function() {
+        },
+        displayBudget: function(obj) {
+            document.querySelector(DOMstrings.budgetLabel).textContent = obj.budget;
+            document.querySelector(DOMstrings.incomeLabel).textContent = obj.totalInc;
+            document.querySelector(DOMstrings.expenseLabel).textContent = obj.totalExp;
+            
+            
+            if(obj.percentage > 0 ) {
+                document.querySelector(DOMstrings.precentageLabel).textContent = obj.percentage + '%';
+            }else {
+                document.querySelector(DOMstrings.precentageLabel).textContent = '---';
+            }
+        },
+        clearFields: function() {
             var fields, fieldsArray;
             fields = document.querySelectorAll(DOMstrings.inputDescription +', ' + DOMstrings.inputValue);
 
@@ -129,13 +179,15 @@ var contorller = (function(budgetCtrl, UICtrl){
         });
     }
     var updateBudget = function () {
+        var budget;
 
         //1. Calculate the budget
+        budgetController.calculateBudget();
 
         //2. Return the budget
-
+        budget = budgetController.getBudget();
         //3. Display the budget on the UI
-
+        UIController.displayBudget(budget);
     }
     var ctrlAddItem = function() {
         var input , newItem;
